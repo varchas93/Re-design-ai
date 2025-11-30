@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Resume AI – Analysis</title>
+
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #fff;
+    color: #000;
+    margin: 0;
+    padding: 40px 20px;
+  }
+
+  h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .section {
+    margin: 30px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fafafa;
+    position: relative;
+  }
+
+  .section h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  ul {
+    padding-left: 20px;
+    line-height: 1.6;
+  }
+
+  .btn-back {
+    background: #000;
+    color: white;
+    padding: 10px 22px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 25px;
+  }
+
+  .btn-back svg,
+  .copy-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: white;
+  }
+
+  .copy-btn {
+    background: #000;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .loading {
+    font-size: 16px;
+    margin-top: 40px;
+    color: #666;
+  }
+</style>
+</head>
+
+<body>
+
+<button onclick="history.back()" class="btn-back">
+  <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+  Back
+</button>
+
+<h1>AI Resume Analysis</h1>
+
+<div id="loading" class="loading">Analyzing the Job Description...</div>
+
+<div id="results" style="display:none;">
+
+  <div class="section">
+    <h2>
+      Required Skills
+      <button class="copy-btn" onclick="copySection('reqSkills')">
+        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg>
+        Copy
+      </button>
+    </h2>
+    <ul id="reqSkills"></ul>
+  </div>
+
+  <div class="section">
+    <h2>
+      Missing Skills (Add to Resume)
+      <button class="copy-btn" onclick="copySection('missSkills')">
+        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg>
+        Copy
+      </button>
+    </h2>
+    <ul id="missSkills"></ul>
+  </div>
+
+  <div class="section">
+    <h2>
+      Sections You Should Add
+      <button class="copy-btn" onclick="copySection('sections')">
+        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg>
+        Copy
+      </button>
+    </h2>
+    <ul id="sections"></ul>
+  </div>
+
+  <div class="section">
+    <h2>
+      Improved Resume Bullet Points
+      <button class="copy-btn" onclick="copySection('improvedBullets')">
+        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg>
+        Copy
+      </button>
+    </h2>
+    <ul id="improvedBullets"></ul>
+  </div>
+
+</div>
+
+<script>
+  const jd = localStorage.getItem("jdText");
+
+  const mockResponse = {
+    required_skills: [
+      "SQL", "Excel", "Data Visualization", "Communication", "Problem Solving"
+    ],
+    missing_skills: [
+      "Power BI", "Python", "Dashboard Building"
+    ],
+    add_sections: [
+      "Summary Section",
+      "Skills Section",
+      "Projects Section",
+      "Achievements Section"
+    ],
+    improved_bullets: [
+      "Improved data reporting accuracy by 25% using Excel and SQL queries.",
+      "Automated recurring tasks to reduce manual effort by 40%.",
+      "Created performance dashboards that improved decision-making for managers."
+    ]
+  };
+
+  setTimeout(() => {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("results").style.display = "block";
+
+    fillList("reqSkills", mockResponse.required_skills);
+    fillList("missSkills", mockResponse.missing_skills);
+    fillList("sections", mockResponse.add_sections);
+    fillList("improvedBullets", mockResponse.improved_bullets);
+
+  }, 1000);
+
+  function fillList(id, data) {
+    const ul = document.getElementById(id);
+    ul.innerHTML = "";
+    data.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      ul.appendChild(li);
+    });
+  }
+
+  // COPY FUNCTION
+  function copySection(id) {
+    const items = [...document.querySelectorAll(`#${id} li`)]
+      .map(li => `• ${li.textContent}`)
+      .join("\n");
+
+    navigator.clipboard.writeText(items).then(() => {
+      alert("Copied to clipboard!");
+    });
+  }
+</script>
+
+</body>
+</html>
